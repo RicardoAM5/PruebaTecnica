@@ -1,0 +1,109 @@
+<h1 class="mb-4">Ordenes</h1>
+<hr />
+    <p-button
+      severity="success"
+      label="Nueva Orden"
+      icon="pi pi-plus"
+      (onClick)="openNew()"
+    ></p-button>
+
+
+<p-table
+  [value]="orders"
+  [paginator]="true"
+  [rows]="10"
+  [responsiveLayout]="'scroll'"
+>
+  <ng-template pTemplate="header">
+    <tr>
+      <th>Usuario</th>
+      <th>Producto</th>
+      <th>Categoría</th>
+      <th>Cantidad</th>
+      <th>Precio Unitario</th>
+      <th>Importe Total</th>
+      <th>Fecha</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-order>
+    <tr>
+      <td>{{ order.usuario.nombre }}</td>
+      <td>{{ order.producto.nombre }}</td>
+      <td>{{ order.producto.categoria }}</td>
+      <td>{{ order.cantidad }}</td>
+      <td>{{ order.preciounitario | currency }}</td>
+      <td>{{ order.cantidad * order.preciounitario | currency }}</td>
+      <td>{{ order.fecha | date: 'yyyy-MM-dd' }}</td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<div class="mt-4">
+  <h5>Gran Total: {{ calculateGrandTotal() | currency }}</h5>
+  <h5>
+    Total para "Smartphone":
+    {{ calculateSmartphoneTotal() | currency }}
+  </h5>
+</div>
+
+<p-dialog
+  [(visible)]="showDialog"
+  header="Nueva Orden"
+  [modal]="true"
+  [style]="{ width: '500px' }"
+  [draggable]="false"
+>
+  <form [formGroup]="orderForm" (ngSubmit)="saveOrder()">
+    <div class="p-fluid">
+      <div class="field">
+        <label for="usuario">Usuario</label>
+        <p-dropdown
+          [options]="filteredUsers"
+          optionLabel="nombre"
+          formControlName="usuario"
+          placeholder="Seleccione un usuario"
+          [ngClass]="{ 'p-invalid': isFieldInvalid('usuario') }"
+        ></p-dropdown>
+        <small *ngIf="isFieldInvalid('usuario')" class="p-error">Usuario es obligatorio.</small>
+      </div>
+      <div class="field">
+        <label for="producto">Producto</label>
+        <p-dropdown
+          [options]="filteredProducts"
+          optionLabel="nombre"
+          formControlName="producto"
+          placeholder="Seleccione un producto"
+          [ngClass]="{ 'p-invalid': isFieldInvalid('producto') }"
+        ></p-dropdown>
+        <small *ngIf="isFieldInvalid('producto')" class="p-error">Producto es obligatorio.</small>
+      </div>
+      <div class="field">
+        <label for="cantidad">Cantidad</label>
+        <input
+          id="cantidad"
+          type="number"
+          pInputText
+          formControlName="cantidad"
+          min="1"
+          [ngClass]="{ 'p-invalid': isFieldInvalid('cantidad') }"
+        />
+        <small *ngIf="isFieldInvalid('cantidad')" class="p-error">Cantidad debe ser mayor a 0.</small>
+      </div>
+      <div class="field">
+        <label for="preciounitario">Precio Unitario</label>
+        <input
+          id="preciounitario"
+          type="number"
+          pInputText
+          formControlName="precioUnitario"
+          min="1"
+          [ngClass]="{ 'p-invalid': isFieldInvalid('precioUnitario') }"
+        />
+        <small *ngIf="isFieldInvalid('precioUnitario')" class="p-error">Precio debe ser mayor a 0.</small>
+      </div>
+    </div>
+    <div class="p-dialog-footer">
+      <p-button label="Guardar" icon="pi pi-check" type="submit" [disabled]="!orderForm.valid"></p-button>
+    </div>
+  </form>
+</p-dialog>

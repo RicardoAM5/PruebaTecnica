@@ -1,0 +1,151 @@
+<h1 class="mb-4">Usuarios</h1>
+<hr />
+
+
+    <p-button
+      severity="success"
+      label="Nuevo Usuario"
+      icon="pi pi-plus"
+      (onClick)="openNew()"
+    ></p-button>
+
+
+<p-table
+  [value]="users"
+  [rows]="10"
+  [paginator]="true"
+  [globalFilterFields]="['nombre', 'correo', 'paterno', 'materno']"
+  [responsiveLayout]="'scroll'"
+>
+  <ng-template pTemplate="header">
+    <tr>
+      <th pSortableColumn="idusuario">ID <p-sortIcon field="idusuario" /></th>
+      <th pSortableColumn="nombre">Nombre <p-sortIcon field="nombre" /></th>
+      <th pSortableColumn="paterno">Apellido Paterno <p-sortIcon field="paterno" /></th>
+      <th pSortableColumn="materno">Apellido Materno <p-sortIcon field="materno" /></th>
+      <th>Correo</th>
+      <th>Estatus</th>
+      <th>Fecha Registro</th>
+      <th>Acciones</th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-user>
+    <tr>
+      <td>{{ user.idusuario }}</td>
+      <td>{{ user.nombre }}</td>
+      <td>{{ user.paterno }}</td>
+      <td>{{ user.materno }}</td>
+      <td>{{ user.correo }}</td>
+      <td>
+        <p-tag
+          [value]="user.estatus === 1 ? 'Activo' : 'Inactivo'"
+          [severity]="user.estatus === 1 ? 'success' : 'danger'"
+        ></p-tag>
+      </td>
+      <td>{{ user.fecharegistro }}</td>
+      <td>
+        <p-button
+          icon="pi pi-pencil"
+          (onClick)="editUser(user)"
+          severity="success"
+        ></p-button>
+        <p-button
+          icon="pi pi-trash"
+          (onClick)="deleteUser(user.idusuario)"
+          severity="danger"
+        ></p-button>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>
+
+<p-dialog
+  [(visible)]="showDialog"
+  header="{{ isEditMode ? 'Editar Usuario' : 'Nuevo Usuario' }}"
+  [modal]="true"
+  [style]="{ width: '500px' }"
+  [draggable]="false"
+>
+  <form [formGroup]="userForm" (ngSubmit)="saveUser()">
+    <div class="p-fluid">
+      <div class="field">
+        <label for="nombre">Nombre</label>
+        <input
+          id="nombre"
+          type="text"
+          pInputText
+          formControlName="nombre"
+          [ngClass]="{ 'p-invalid': isFieldInvalid('nombre') }"
+        />
+        <small *ngIf="isFieldInvalid('nombre')" class="p-error"
+          >El nombre es obligatorio</small
+        >
+      </div>
+      <div class="field">
+        <label for="paterno">Apellido Paterno</label>
+        <input
+          id="paterno"
+          type="text"
+          pInputText
+          formControlName="paterno"
+          [ngClass]="{ 'p-invalid': isFieldInvalid('paterno') }"
+        />
+        <small *ngIf="isFieldInvalid('paterno')" class="p-error"
+          >El apellido paterno es obligatorio</small
+        >
+      </div>
+      <div class="field">
+        <label for="materno">Apellido Materno</label>
+        <input
+          id="materno"
+          type="text"
+          pInputText
+          formControlName="materno"
+          [ngClass]="{ 'p-invalid': isFieldInvalid('materno') }"
+        />
+        <small *ngIf="isFieldInvalid('materno')" class="p-error"
+          >El apellido materno es obligatorio</small
+        >
+      </div>
+      <div class="field">
+        <label for="correo">Correo</label>
+        <input
+          id="correo"
+          type="email"
+          pInputText
+          formControlName="correo"
+          [ngClass]="{ 'p-invalid': isFieldInvalid('correo') }"
+        />
+        <small *ngIf="isFieldInvalid('correo')" class="p-error"
+          >El correo es inválido</small
+        >
+      </div>
+      <div class="field">
+        <label for="estatus">Estatus</label>
+        <p-dropdown
+          id="estatus"
+          [options]="statusOptions"
+          formControlName="estatus"
+        ></p-dropdown>
+      </div>
+      <div class="field">
+        <label for="fecharegistro">Fecha Registro</label>
+        <input
+          id="fecharegistro"
+          type="text"
+          pInputText
+          formControlName="fecharegistro"
+          readonly
+        />
+      </div>
+    </div>
+    <div class="p-dialog-footer">
+      <p-button
+        label="Guardar"
+        icon="pi pi-check"
+        type="submit"
+        [disabled]="!userForm.valid"
+      ></p-button>
+    </div>
+  </form>
+</p-dialog>
